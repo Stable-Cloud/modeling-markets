@@ -381,9 +381,9 @@ python experiments/experiment_1_stopping_time.py
 ### Discrete Hedging Error Source
 Under discrete rebalancing, the portfolio replicates poorly due to **gamma risk**:
 
-$$
-P\&L_{\text{discrete}} \approx \int_0^T \frac{1}{2}\Gamma(t)(\Delta S_t)^2 \, dt
-$$
+```math
+\text{P\&L}_{\text{discrete}} \approx \int_0^T \frac{1}{2}\Gamma(t)(\Delta S_t)^2 \, dt
+```
 
 
 
