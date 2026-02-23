@@ -119,19 +119,6 @@ Modeling Markets/
 └── README.md                        # This file
 ```
 
-## Installation
-
-### Requirements
-- Python 3.8+
-- NumPy
-- SciPy
-- Matplotlib
-
-### Setup
-```bash
-pip install -r requirements.txt
-```
-
 ## Installation & Setup
 
 ### Requirements
@@ -152,7 +139,7 @@ python Complete_Project_Analysis.ipynb  # Run comprehensive analysis
 **Purpose**: Simulate continuous stock price paths using geometric Brownian motion.
 
 **Key Class: `MarketSubstrate`**
-- Implements Euler-Maruyama discretization: dS = μS dt + σS dW
+- Implements Euler-Maruyama discretization: $dS = \mu S dt + \sigma S dW$
 - Generates price paths with configurable time step
 - Input validation and numerical stability checks
 
@@ -183,11 +170,12 @@ market.advance(dt=0.001)
 - `black_scholes_theta(S, K, r, sigma, T, t)` - Time decay
 
 **Key Formula:**
-$$C_{BS} = S_0 N(d_1) - Ke^{-rT}N(d_2)$$
+
+$$C_{BS} = S_0 N(d_1) - K e^{-rT} N(d_2)$$
 
 where:
-$$d_1 = \frac{\ln(S_0/K) + (r + \sigma^2/2)T}{\sigma\sqrt{T}}, \quad d_2 = d_1 - \sigma\sqrt{T}$$
 
+$$d_1 = \frac{\ln(S_0/K) + (r + \sigma^2/2)T}{\sigma\sqrt{T}}, \quad d_2 = d_1 - \sigma\sqrt{T}$$
 ### 3. Hedging Agents (`agents/`)
 
 #### Base Agent Class (`base.py`)
@@ -200,8 +188,8 @@ Abstract interface for all trading strategies:
 **Strategy**: Maintain portfolio delta = option delta at each rebalancing time.
 
 **Workflow:**
-1. Compute target delta: Δ = N(d₁)
-2. Calculate required trades: Δ_trade = Δ_target - Δ_current
+1. Compute target delta: $\Delta = N(d_1)$
+2. Calculate required trades: $\Delta_{\text{trade}} = \Delta_{\text{target}} - \Delta_{\text{current}}$
 3. Execute trades and update cash
 4. Record transaction costs
 
@@ -323,9 +311,9 @@ print(f"Replication Error: {result['final_error']}")
 **Objective**: Quantify how rebalancing interval affects hedging performance.
 
 **Parameters:**
-- Rebalancing intervals: Δt ∈ {0.01, 0.05, 0.1, 0.2} years
+- Rebalancing intervals: $\Delta t \in \{0.01, 0.05, 0.1, 0.2\}$ years
 - Monte Carlo paths: 1000
-- Option: European call, ATM (S₀ = K = 100)
+- Option: European call, ATM ($S_0 = K = 100$)
 
 **Run:**
 ```bash
@@ -334,8 +322,8 @@ python experiments/experiment_1_stopping_time.py
 
 **Expected Results:**
 - Mean error → 0 (unbiased hedging)
-- Error std dev scales as O(√Δt)
-- Larger Δt → larger tail risk (negative errors)
+- Error std dev scales as $O(\sqrt{\Delta t})$
+- Larger $\Delta t$ → larger tail risk (negative errors)
 - Gamma drives error variance
 
 ### Experiment 2: Transaction Costs Impact
@@ -349,9 +337,9 @@ python experiments/experiment_1_stopping_time.py
 - Optimization: find cost-minimizing frequency
 
 **Expected Trade-off:**
-- Few rebalances (Δt large) → low costs, high hedging error
-- Many rebalances (Δt small) → high costs, low hedging error
-- Optimal Δt* exists for each cost structure
+- Few rebalances ($\Delta t$ large) → low costs, high hedging error
+- Many rebalances ($\Delta t$ small) → high costs, low hedging error
+- Optimal $\Delta t^*$ exists for each cost structure
 
 ### Experiment 3: Information-Aware Hedging
 **File**: `experiments/experiment_3_information_aware.py`
@@ -374,44 +362,40 @@ python experiments/experiment_1_stopping_time.py
 1. No arbitrage (frictionless markets)
 2. Continuous trading at any time
 3. No transaction costs or taxes
-4. Constant risk-free rate r
-5. Constant volatility σ
+4. Constant risk-free rate $r$
+5. Constant volatility $\sigma$
 6. European options (exercise only at maturity)
 
 ### Discrete Hedging Error Source
 Under discrete rebalancing, the portfolio replicates poorly due to **gamma risk**:
 
-```math
-\text{P\&L}_{\text{discrete}} \approx \int_0^T \frac{1}{2}\Gamma(t)(\Delta S_t)^2 \, dt
-```
-
-
-
+$$\text{P\&L}_{\text{discrete}} \approx \int_0^T \frac{1}{2}\Gamma(t)(\Delta S_t)^2 \, dt$$
 
 This integral depends on:
 - **Gamma magnitude**: Convexity of option value
-- **Realized variance**: $(∆S_t)^2$ realization
-- **Rebalancing frequency**: Larger $\Delta t$ → larger $|∆S_t|$ between rebalances
+- **Realized variance**: $(\Delta S_t)^2$ realization
+- **Rebalancing frequency**: Larger $\Delta t$ → larger $|\Delta S_t|$ between rebalances
 
 ### Convergence Property
+
 As $\Delta t \to 0$:
+
 $$\lim_{\Delta t \to 0} E[\text{Error}^2] = 0$$
 
 But for finite $\Delta t$:
+
 $$E[\text{Error}^2] \approx C \cdot \Delta t$$
 
-where C depends on gamma, volatility, and contract specifications.
+where $C$ depends on gamma, volatility, and contract specifications.
 
 ## Key Theoretical Results
-- Error variance scales as O(Δt)
+- Error variance scales as $O(\Delta t)$
 - Higher gamma → larger errors
 - Errors are path-dependent
-
-**Convergence:**
-$$\text{Var}[\text{Error}] \approx C \cdot \Delta t \text{ as } \Delta t \to 0$$
+- Convergence: $\text{Var}[\text{Error}] \approx C \cdot \Delta t$ as $\Delta t \to 0$
 
 ### Transaction Cost Model
-With proportional costs (c bps per trade):
+With proportional costs ($c$ bps per trade):
 
 $$\text{Total Cost} = c \cdot \sum_{i} |\text{Trade}_i|$$
 
@@ -420,7 +404,8 @@ The net hedging cost trades off:
 - **Increased cost** → more rebalances executed
 
 An optimal rebalancing interval minimizes total cost:
-$$\Delta t^* = \arg\min_{\Delta t} E[\text{Error}^2] + \text{Transaction Costs}(\Delta t)$$
+
+$$\Delta t^* = \arg\min_{\Delta t} \left[ E[\text{Error}^2] + \text{Transaction Costs}(\Delta t) \right]$$
 
 ## Implementation Quality
 
@@ -561,7 +546,7 @@ pytest tests/ -v
 - **test_distribution.py**: Verify GBM produces correct distribution
 - **test_martingale.py**: Verify discounted prices are martingales
 - **test_paths.py**: Verify path continuity and smoothness
-- **test_time_scaling.py**: Verify variance scaling as dt→0
+- **test_time_scaling.py**: Verify variance scaling as $dt \to 0$
 
 ### Manual Verification
 - Greeks validation against finite differences
@@ -575,10 +560,11 @@ The primary source of discrete hedging error is **gamma risk** (convexity loss).
 - Between rebalancing times, the stock price moves
 - Option value changes non-linearly (gamma effect)
 - Delta hedging cannot react fast enough
-- Net loss = (1/2) × Γ × (ΔS)²
+- Net loss = $\frac{1}{2} \times \Gamma \times (\Delta S)^2$
 
 ### 2. Error Scales Predictably
 Empirical validation shows:
+
 $$E[\text{Error}^2] \propto \Delta t \quad \text{(for small } \Delta t \text{)}$$
 
 This allows traders to estimate hedging cost from:
